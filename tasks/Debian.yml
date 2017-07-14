@@ -1,0 +1,5 @@
+---
+- name: install slapd
+  apt:
+    name: slapd
+    state: present

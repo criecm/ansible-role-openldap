@@ -1,0 +1,9 @@
+---
+openldap_confdir: /usr/local/etc/openldap
+openldap_user: ldap
+openldap_group: ldap
+openldap_datadir: /var/db/openldap-data
+openldap_modsdir: /usr/local/libexec/openldap
+slapd_exec: /usr/local/libexec/slapd
+slapd_pidfile: /var/run/openldap/slapd.pid
+slapd_argsfile: /var/run/openldap/slapd.args

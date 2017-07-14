@@ -1,0 +1,5 @@
+---
+- name: install slapd
+  openbsdpkg:
+    name: openldap-server--
+    state: present

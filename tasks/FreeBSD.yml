@@ -1,0 +1,6 @@
+---
+- name: install openldap
+  pkgng:
+    name: openldap-sasl-server
+    state: present
+

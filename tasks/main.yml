@@ -1,0 +1,116 @@
+---
+- include_vars: '{{ item }}'
+  with_first_found:
+    - files:
+        - 'vars/{{ ansible_os_family }}.yml'
+      skip: true
+  tags: vars, openldap
+
+- include: '{{ item }}'
+  with_first_found:
+    - files:
+        - 'tasks/{{ ansible_os_family }}.yml'
+      skip: true
+  tags: vars, openldap
+
+- name: datadir
+  file:
+    state: directory
+    path: '{{ openldap_datadir }}'
+    owner: '{{ openldap_user }}'
+    group: '{{ openldap_group }}'
+    mode: '0700'
+  tags: config, openldap
+
+# ssl/tls
+- block:
+  - name: ssl dir
+    file:
+      path: '{{ openldap_confdir }}/ssl'
+      state: directory
+      group: '{{ openldap_group }}'
+      mode: '0770'
+  - name: tls cert/key
+    copy:
+      src: 'openldap/{{ item }}'
+      dest: '{{ openldap_confdir }}/ssl/{{ item }}'
+      group: '{{ openldap_group }}'
+      mode: '0640'
+    with_items:
+      - '{{ openldap_tls_cert }}'
+      - '{{ openldap_tls_key }}'
+  - name: ssl ca file
+    copy:
+      src: '{{ openldap_tls_cacert | default(ldap_cacert) | default(tls_cacert) }}'
+      dest: '{{ openldap_confdir }}/ca.crt'
+    when: 'openldap_tls_cacert != "" or ldap_cacert != "" or tls_cacert != ""'
+  when: 'openldap_tls_cert != ""'
+  tags: config, ssl, openldap
+
+- name: openldap schemas
+  copy:
+    src: '{{ item }}'
+    dest: '{{ openldap_confdir }}/schema/'
+    group: '{{ openldap_group }}'
+    mode: '0644'
+  with_fileglob:
+    - '{{ playbook_dir }}/files/openldap/schema/*.schema'
+  failed_when: False
+  tags: openldap, config, schemas
+
+- debug:
+    msg: '{{ item }}'
+  with_items: '{{ openldap_bases | json_query("[*].includes") }}'
+
+- name: slapd includes
+  template:
+    src: 'files/openldap/{{ item }}'
+    dest: '{{ openldap_confdir }}/{{ item }}'
+    group: '{{ openldap_group }}'
+    mode: '0640'
+  with_items: '{{ openldap_bases | json_query("[*].includes") }}'
+  tags: config, openldap
+  notify: restart slapd
+
+- name: test for slapd backends modules (for slapd.conf.j2)
+  stat:
+    path: '{{ openldap_modsdir }}/back_{{ item }}.la'
+  with_items: '{{ openldap_bases | json_query("[*].database") | union([openldap_db_engine]) | unique }}'
+  register: openldap_dbmodules_stat
+  failed_when: False
+  when: 'openldap_modsdir != ""'
+  tags: config, openldap
+
+- set_fact:
+    openldap_dbmodules: "{{ openldap_dbmodules_stat | json_query(\"results[?stat.exists].item\") }}"
+  tags: tst
+
+- debug:
+    var: openldap_dbmodules_stat
+  tags: tst
+
+- name: test slapd.conf
+  template:
+    src: slapd.conf.j2
+    dest: '/tmp/slapd.conf'
+    group: '{{ openldap_group }}'
+    mode: '0640'
+  tags: tst
+  changed_when: False
+
+- name: slapd.conf
+  template:
+    src: slapd.conf.j2
+    dest: '{{ openldap_confdir }}/slapd.conf'
+    group: '{{ openldap_group }}'
+    mode: '0640'
+    validate: '{{ slapd_exec }} -Tt -f %s -u'
+  tags: config, openldap
+  notify: restart slapd
+
+- name: start slapd
+  service:
+    name: '{{ slapd_service_name }}'
+    enabled: True
+    state: started
+  tags: config, openldap

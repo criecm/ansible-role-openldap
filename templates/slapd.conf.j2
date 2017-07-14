@@ -1,0 +1,121 @@
+# {{ ansible_managed }}
+{% for schema in openldap_schemas %}
+include		{{ openldap_confdir }}/schema/{{ schema }}.schema
+{% endfor %}
+
+pidfile         {{ slapd_pidfile }}
+argsfile        {{ slapd_argsfile }}
+
+#       1      trace function calls
+#       2      debug packet handling
+#       4      heavy trace debugging
+#       8      connection management
+#       16     print out packets sent and received
+#       32     search filter processing
+#       64     configuration file processing
+#       128    access control list processing
+#       256    stats log connections/operations/results
+#       512    stats log entries sent
+#       1024   print communication with shell backends
+#       2048   entry parsing
+
+#loglevel  426  
+#loglevel  384  
+#loglevel  256  
+#loglevel  128  
+#loglevel  160  
+#loglevel 1 
+loglevel 0
+
+{% if openldap_modsdir != "" %}
+# Load dynamic backend modules:
+modulepath     {{ openldap_modsdir }}
+{% for dbm in openldap_dbmodules %}
+moduleload     back_{{ dbm }}.la
+{% endfor %}
+{% endif %}
+
+{% if openldap_tls_cert %}
+TLSCertificateFile      {{ openldap_confdir }}/ssl/{{ openldap_tls_cert }}
+TLSCertificateKeyFile   {{ openldap_confdir }}/ssl/{{ openldap_tls_key }}
+TLSCACertificateFile    {{ openldap_tls_cacert | default(ldap_tls_cacert) | regex_replace('^[^/].*$',openldap_confdir+'/ca.crt') }}
+{% endif %}
+
+access to dn.base="" by * read
+access to dn.base="cn=Subschema" by * read
+access to *
+        by self write
+        by users read
+        by anonymous auth
+#       
+
+sizelimit 3000
+
+idletimeout 300
+
+conn_max_pending_auth 5000
+
+{% for db in openldap_bases %}
+# db {{ db.suffix }}
+database        {{ db.database | default(openldap_db_engine) }}
+
+{% if db.database | default(openldap_db_engine) == "mdb" %}
+maxsize         {{ db.maxsize | default(openldap_db_maxsize) }}
+{% elif db.database | default(openldap_db_engine) == "hdb" %}
+# man slapd-hdb
+cachesize       100000
+cachefree       100
+#dbcachesize     1000000
+## les 2 bdb-only
+idlcachesize    300000
+checkpoint      1024 5
+dbnosync
+{% endif %}
+
+suffix          "{{ db.suffix }}"
+
+{% if "rootdn" in db %}
+rootdn          {{ db.rootdn }}
+{% endif %}
+
+directory       {{ db.directory | default(openldap_datadir)}}
+
+{% for inc in db.includes %}
+include {{ openldap_confdir }}/{{ inc }}
+{% endfor %}
+
+{% if "slave" in db %}
+syncrepl rid={{ db.slave.rid | default(openldap_slave_rid) }}
+        provider={{ db.slave.provider }}
+        type=refreshAndPersist
+        retry="60 10 120 +"
+        interval=00:00:00:15
+        binddn="{{ db.slave.binddn }}"
+        credentials={{ db.slave.credentials }}
+        bindmethod={{ db.slave.bindmethod }}
+        searchbase="dc=egim-mrs,dc=fr"
+        tls_cacert={{ db.slave.tls_cacert | default(ldap_tls_cacert) }}
+        scope=sub
+        schemachecking=on
+
+{% if "updateref" in db.slave %}updateref {{ db.slave.updateref }}{% endif %}
+
+{% endif %}
+{% if openldap_modsdir != "" %}
+moduleload dynlist
+{% endif %}
+overlay dynlist
+dynlist-attrset groupOfURLs memberURL member
+
+index   objectClass     pres,eq
+{% for idx in db.indexes %}
+index	{{ idx.0 }}	{{ idx.1 }}
+{% endfor %}
+
+{% if "slave" in db %}
+# index pour syncprov
+index   entryUUID,entryCSN      eq
+{% endif %}
+
+{% endfor %}
+
