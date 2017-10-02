@@ -79,7 +79,7 @@ Example Playbook
 ```
 - hosts: servers
   roles:
-    - openldap
+    - criecm.openldap
   vars:
     openldap_schemas:
       - core
@@ -106,5 +106,4 @@ License
 -------
 
 BSD
-
 
