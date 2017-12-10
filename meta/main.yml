@@ -5,12 +5,12 @@ galaxy_info:
 
   license: BSD
 
-  min_ansible_version: 2.3
+  min_ansible_version: 2.4
 
   platforms:
     - name: FreeBSD
       versions:
-        - 11.0
+        - 11.1
         - 10.3
     - name: Debian
       versions:
@@ -19,6 +19,7 @@ galaxy_info:
     - name: OpenBSD
       versions:
         - 6.1
+        - 6.2
 
   galaxy_tags:
     - openldap
