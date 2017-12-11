@@ -6,7 +6,7 @@
       skip: true
   tags: vars, openldap
 
-- include: '{{ item }}'
+- include_tasks: '{{ item }}'
   with_first_found:
     - files:
         - 'tasks/{{ ansible_os_family }}.yml'
