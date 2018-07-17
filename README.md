@@ -29,6 +29,8 @@ Role Variables (default)
     * `suffix` ()
     * `directory` ( `openldap_datadir`, system-dependant)
       **you NEED to define it if more than one db**
+    * `overlays ([])`
+      list of overlay's names (module will be loaded if needed)
     * `includes` ([])
       List of files to include, relative path to:
       * in playbook: playbook/files/openldap/ for source

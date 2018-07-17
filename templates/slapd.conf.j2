@@ -33,6 +33,10 @@ modulepath     {{ openldap_modsdir }}
 {% for dbm in openldap_dbmodules %}
 moduleload     back_{{ dbm }}.la
 {% endfor %}
+
+{% for m in openldap_modules %}
+moduleload	{{ m }}
+{% endfor %}
 {% endif %}
 
 {% if openldap_tls_cert %}
@@ -107,6 +111,7 @@ moduleload dynlist
 overlay dynlist
 dynlist-attrset groupOfURLs memberURL member
 
+overlay ppolicy
 index   objectClass     pres,eq
 {% for idx in db.indexes %}
 index	{{ idx.0 }}	{{ idx.1 }}

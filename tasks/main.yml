@@ -85,18 +85,30 @@
     openldap_dbmodules: "{{ openldap_dbmodules_stat | json_query(\"results[?stat.exists].item\") }}"
   tags: tst
 
-- debug:
-    var: openldap_dbmodules_stat
-  tags: tst
+- name: slapd modules
+  stat:
+    path: '{{ openldap_modsdir }}/{{ item }}.la'
+  with_items: '{{ openldap_bases | json_query("[*].overlays") | list | unique }}'
+  register: openldap_overlays_mods
+  failed_when: False
+  when: 'openldap_modsdir != ""'
+  tags: config, openldap
 
-- name: test slapd.conf
-  template:
-    src: slapd.conf.j2
-    dest: '/tmp/slapd.conf'
-    group: '{{ openldap_group }}'
-    mode: '0640'
-  tags: tst
-  changed_when: False
+- set_fact:
+    openldap_modules: '{{ openldap_overlays_mods | json_query("results[?stat.exists].item") }}'
+  tags: config, openldap
+
+- debug:
+    var: openldap_overlays_mods
+
+#- name: test slapd.conf
+#  template:
+#    src: slapd.conf.j2
+#    dest: '/tmp/slapd.conf'
+#    group: '{{ openldap_group }}'
+#    mode: '0640'
+#  tags: tst
+#  changed_when: False
 
 - name: slapd.conf
   template:
