@@ -10,6 +10,7 @@ galaxy_info:
   platforms:
     - name: FreeBSD
       versions:
+        - 11.2
         - 11.1
         - 10.3
     - name: Debian
@@ -18,8 +19,8 @@ galaxy_info:
         - stretch
     - name: OpenBSD
       versions:
-        - 6.1
         - 6.2
+        - 6.3
 
   galaxy_tags:
     - openldap
