@@ -17,6 +17,7 @@ Role Variables (default)
   * `openldap_slave_rid` (0)
     value for slave 'rid' suitable for host_vars (must be unique)
     while rest of config can stay unique in playbook or group_vars
+  * `slapd_rc_flags ("-h 'ldap:/// ldaps:///'")
   * `openldap_db_engine` (mdb - hdb for OpenBSD)
   * `openldap_db_maxsize` (1073741824)
   * `openldap_bases` ([])
