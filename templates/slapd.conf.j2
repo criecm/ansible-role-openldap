@@ -97,7 +97,7 @@ syncrepl rid={{ db.slave.rid | default(openldap_slave_rid) }}
         binddn="{{ db.slave.binddn }}"
         credentials={{ db.slave.credentials }}
         bindmethod={{ db.slave.bindmethod }}
-        searchbase="dc=egim-mrs,dc=fr"
+        searchbase="{{ db.slave.searchbase }}"
         tls_cacert={{ db.slave.tls_cacert | default(ldap_tls_cacert) }}
         scope=sub
         schemachecking=on
