@@ -6,7 +6,7 @@ Install openldap server
 Requirements
 ------------
 
-FreeBSD 10|11, debian 8
+FreeBSD 11/12, debian 8(+?)
 
 Role Variables (default)
 ------------------------
@@ -32,6 +32,7 @@ Role Variables (default)
       **you NEED to define it if more than one db**
     * `overlays ([])`
       list of overlay's names (module will be loaded if needed)
+      Adding "syncrepl" here makes a syncrepl master
     * `includes` ([])
       List of files to include, relative path to:
       * in playbook: playbook/files/openldap/ for source
@@ -94,6 +95,10 @@ Example Playbook
       rootdn: cn=admin
       suffix: dc=at,dc=home
       includes: [ slapd.access ]
+      overlays:
+        - dynlist
+        - ppolicy
+        - smbk5pwd
       indexes:
         - [ "uid,uidNumber,gidNumber,memberUID", "pres,eq" ]
       slave:

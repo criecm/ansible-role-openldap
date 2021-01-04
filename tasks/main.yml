@@ -75,7 +75,7 @@
 - name: test for slapd backends modules (for slapd.conf.j2)
   stat:
     path: '{{ openldap_modsdir }}/back_{{ item }}.la'
-  with_items: '{{ openldap_bases | json_query("[*].database") | union([openldap_db_engine]) | unique }}'
+  with_items: '{{ openldap_bases | json_query("[*].database") | union([openldap_db_engine,"monitor"]) | unique }}'
   register: openldap_dbmodules_stat
   failed_when: False
   when: 'openldap_modsdir != ""'

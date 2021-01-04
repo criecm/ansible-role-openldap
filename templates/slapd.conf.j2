@@ -88,6 +88,19 @@ directory       {{ db.directory | default(openldap_datadir)}}
 include {{ openldap_confdir }}/{{ inc }}
 {% endfor %}
 
+{% if "syncprov" in db.overlays %}
+overlay syncprov
+syncprov-checkpoint 100 10
+syncprov-sessionlog 100
+{% endif %}
+
+{% if "smbk5pwd" in db.overlays %}
+overlay smbk5pwd
+smbk5pwd-enable samba
+#smbk5pwd-enable shadow
+smbk5pwd-must-change 0
+{% endif %}
+
 {% if "slave" in db %}
 syncrepl rid={{ db.slave.rid | default(openldap_slave_rid) }}
         provider={{ db.slave.provider }}
@@ -105,22 +118,34 @@ syncrepl rid={{ db.slave.rid | default(openldap_slave_rid) }}
 {% if "updateref" in db.slave %}updateref {{ db.slave.updateref }}{% endif %}
 
 {% endif %}
-{% if openldap_modsdir != "" %}
+{% if "dynlist" in db.overlays %}
+{%   if openldap_modsdir != "" %}
 moduleload dynlist
-{% endif %}
+{%   endif %}
 overlay dynlist
 dynlist-attrset groupOfURLs memberURL member
+{% endif %}
 
+{% if "ppolicy" in db.overlays %}
 overlay ppolicy
+{% endif %}
 index   objectClass     pres,eq
 {% for idx in db.indexes %}
 index	{{ idx.0 }}	{{ idx.1 }}
 {% endfor %}
 
-{% if "slave" in db %}
+{% if "slave" in db or "syncprov" in db.overlays %}
 # index pour syncprov
 index   entryUUID,entryCSN      eq
 {% endif %}
 
+{% if openldap_monitor | default(False) %}
+database monitor
+
+access to dn.subtree="cn=Monitor"
+                   by dn.exact="{{ db.rootdn }}" write
+                   by users read
+                   by * none
+{% endif %}
 {% endfor %}
 

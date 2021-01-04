@@ -23,3 +23,4 @@ openldap_schmas:
 openldap_tls_cert: ""
 openldap_tls_key: ""
 openldap_tls_cacert: ""
+openldap_monitordb: True
