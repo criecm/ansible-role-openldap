@@ -11,7 +11,7 @@ slapd_service_name: slapd
 slapd_exec: /usr/sbin/slapd
 slapd_pidfile: /var/run/slapd/slapd.pid
 slapd_argsfile: /var/run/slapd/slapd.args
-slapd_rc_flags: "-h 'ldap:///{% if openldap_tls_cert %} ldaps:///{% endif %}'"
+slapd_rc_flags: "-h 'ldap:///{% if openldap_tls_cert %} ldaps:///{% endif %} ldapi:///'"
 
 #openldap_slave_rid: 0
 openldap_schmas:
