@@ -1,7 +1,7 @@
 ---
 - name: install openldap
   pkgng:
-    name: openldap-sasl-server
+    name: openldap24-server
     state: present
 
 - name: rc.conf:slapd_flags
