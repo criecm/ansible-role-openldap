@@ -35,7 +35,7 @@ moduleload     back_{{ dbm }}.la
 {% endfor %}
 
 {% for m in openldap_modules %}
-moduleload	{{ m }}
+moduleload	{{ m }}.la
 {% endfor %}
 {% endif %}
 
