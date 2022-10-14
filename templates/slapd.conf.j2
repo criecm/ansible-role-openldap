@@ -53,7 +53,7 @@ access to *
         by anonymous auth
 #       
 
-sizelimit 3000
+sizelimit {{ openldap_sizelimit | default("3000") }}
 
 #idletimeout 300
 
