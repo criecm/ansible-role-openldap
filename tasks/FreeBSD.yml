@@ -1,7 +1,7 @@
 ---
 - name: install openldap
   pkgng:
-    name: openldap24-server
+    name: openldap26-server
     state: present
 
 - name: rc.conf:slapd_flags

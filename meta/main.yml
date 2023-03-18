@@ -15,6 +15,7 @@ galaxy_info:
       versions:
         - stretch
         - buster
+        - bullseye
     - name: OpenBSD
       versions:
         - all
