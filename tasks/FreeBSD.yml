@@ -9,3 +9,10 @@
     line: 'slapd_flags="{{ slapd_rc_flags }}"'
     regexp: '^slapd_flags='
     dest: /etc/rc.conf
+
+- name: enable slapd
+  service:
+    name: '{{ slapd_service_name }}'
+    enabled: True
+  tags: config, openldap
+

@@ -1,5 +1,16 @@
 ---
 - name: install slapd
-  openbsdpkg:
+  openbsd_pkg:
     name: openldap-server--
     state: present
+
+- name: get rc flags
+  command: rcctl get slapd flags
+  ignore_errors: True
+  register: getrcflags
+  check_mode: False
+  changed_when: False
+
+- name: set rc flags
+  command: 'rcctl set slapd flags "{{ slapd_rc_flags }}"'
+  when: getrcflags.rc != 0 or getrcflags.stdout != slapd_rc_flags

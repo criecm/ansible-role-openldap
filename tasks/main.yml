@@ -123,6 +123,5 @@
 - name: start slapd
   service:
     name: '{{ slapd_service_name }}'
-    enabled: True
     state: started
   tags: config, openldap

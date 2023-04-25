@@ -3,3 +3,10 @@
   apt:
     name: slapd
     state: present
+
+- name: enable slapd
+  service:
+    name: '{{ slapd_service_name }}'
+    enabled: True
+  tags: config, openldap
+
