@@ -128,6 +128,9 @@ dynlist-attrset groupOfURLs memberURL member
 
 {% if "ppolicy" in db.overlays %}
 overlay ppolicy
+{%   if ppolicy_default | default(False) %}
+ppolicy_default {{ ppolicy_default }}
+{%   endif %}
 {% endif %}
 index   objectClass     pres,eq
 {% for idx in db.indexes %}

@@ -91,6 +91,7 @@ Example Playbook
       - nis
       - inetorgperson
       - rfc2739
+    ppolicy_default: cn=defppolicy,ou=policies,dc=at,dc=home
     openldap_bases:
       rootdn: cn=admin
       suffix: dc=at,dc=home
