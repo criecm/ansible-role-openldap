@@ -131,6 +131,9 @@ overlay ppolicy
 {%   if ppolicy_default | default(False) %}
 ppolicy_default {{ ppolicy_default }}
 {%   endif %}
+{%   if ppolicy_use_lockout | default(False) %}
+ppolicy_use_lockout
+{%   endif %}
 {% endif %}
 index   objectClass     pres,eq
 {% for idx in db.indexes %}
