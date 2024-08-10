@@ -11,6 +11,9 @@
   check_mode: False
   changed_when: False
 
+- name: enable slapd
+  command: rcctl enable slapd
+
 - name: set rc flags
   command: 'rcctl set slapd flags "{{ slapd_rc_flags }}"'
   when: getrcflags.rc != 0 or getrcflags.stdout != slapd_rc_flags

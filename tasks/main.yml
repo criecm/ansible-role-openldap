@@ -98,8 +98,8 @@
     openldap_modules: '{{ openldap_overlays_mods | json_query("results[?stat.exists].item") }}'
   tags: config, openldap
 
-- debug:
-    var: openldap_overlays_mods
+#- debug:
+#    var: openldap_overlays_mods
 
 #- name: test slapd.conf
 #  template:
