@@ -145,7 +145,7 @@ index	{{ idx.0 }}	{{ idx.1 }}
 index   entryUUID,entryCSN      eq
 {% endif %}
 
-{% if openldap_monitor | default(False) %}
+{% if openldap_monitordb | default(False) %}
 database monitor
 
 access to dn.subtree="cn=Monitor"
