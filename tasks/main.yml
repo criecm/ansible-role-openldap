@@ -2,14 +2,14 @@
 - include_vars: '{{ item }}'
   with_first_found:
     - files:
-        - 'vars/{{ ansible_os_family }}.yml'
+        - 'vars/{{ ansible_facts["os_family"] }}.yml'
       skip: true
   tags: vars, openldap
 
 - include_tasks: '{{ item }}'
   with_first_found:
     - files:
-        - 'tasks/{{ ansible_os_family }}.yml'
+        - 'tasks/{{ ansible_facts["os_family"] }}.yml'
       skip: true
   tags: vars, openldap
 

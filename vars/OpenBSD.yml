@@ -3,7 +3,7 @@ openldap_confdir: /etc/openldap
 openldap_user: _openldap
 openldap_group: _openldap
 openldap_datadir: /var/openldap-data
-openldap_db_engine: '{% if ansible_distribution_version is version("7.2","<") %}hdb{% else %}mdb{% endif %}'
+openldap_db_engine: '{% if ansible_facts["distribution_version"] is version("7.2","<") %}hdb{% else %}mdb{% endif %}'
 openldap_modsdir: /usr/local/libexec/openldap
 slapd_exec: /usr/local/libexec/slapd
 slapd_pidfile: /var/run/openldap/slapd.pid
